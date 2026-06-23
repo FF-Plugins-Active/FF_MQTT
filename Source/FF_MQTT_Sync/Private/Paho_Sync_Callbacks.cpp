@@ -85,17 +85,17 @@ int APaho_Manager_Sync::MessageArrived(void* CallbackContext, char* TopicName, i
 	const bool bIsJsonOk = MessageJson.JsonObjectFromString(PayloadStr);
 
 	FJsonObjectWrapper Arrived;
-	Arrived.JsonObject->SetStringField("TopicName", TopicNameStr);
-	Arrived.JsonObject->SetNumberField("TopicLength", TopicLenght);
+	Arrived.JsonObject->SetStringField(TEXT("TopicName"), TopicNameStr);
+	Arrived.JsonObject->SetNumberField(TEXT("TopicLength"), TopicLenght);
 
 	if (bIsJsonOk)
 	{
-		Arrived.JsonObject->SetObjectField("Message", MessageJson.JsonObject);
+		Arrived.JsonObject->SetObjectField(TEXT("Message"), MessageJson.JsonObject);
 	}
 
 	else
 	{
-		Arrived.JsonObject->SetStringField("Message", PayloadStr);
+		Arrived.JsonObject->SetStringField(TEXT("Message"), PayloadStr);
 	}
 
 	MQTTClient_freeMessage(&Message);
