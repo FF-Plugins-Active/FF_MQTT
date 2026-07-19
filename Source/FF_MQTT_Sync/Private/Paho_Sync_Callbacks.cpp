@@ -4,7 +4,7 @@
 
 bool APaho_Manager_Sync::SetSSLParams(FString In_Protocol, FPahoSslOptions In_Options)
 {
-	if (In_Protocol == "wss" || In_Protocol == "mqtts" || In_Protocol == "ssl" || In_Protocol == "WSS" || In_Protocol == "MQTTS" || In_Protocol == "SSL")
+	if (In_Protocol == TEXT("wss") || In_Protocol == TEXT("mqtts") || In_Protocol == TEXT("ssl") || In_Protocol == TEXT("WSS") || In_Protocol == TEXT("MQTTS") || In_Protocol == TEXT("SSL"))
 	{
 		this->SSL_Options = MQTTClient_SSLOptions_initializer;
 		this->SSL_Options.enableServerCertAuth = 0;
@@ -12,32 +12,32 @@ bool APaho_Manager_Sync::SetSSLParams(FString In_Protocol, FPahoSslOptions In_Op
 
 		if (!In_Options.CAPath.IsEmpty() && FPaths::FileExists(In_Options.CAPath))
 		{
-			this->SSL_Options.CApath = (const char*)StringCast<UTF8CHAR>(*In_Options.CAPath).Get();
+			this->SSL_Options.CApath = APaho_Manager_Sync::FStringToStdString(In_Options.CAPath).c_str();
 		}
 
 		if (!In_Options.Path_KeyStore.IsEmpty() && FPaths::FileExists(In_Options.Path_KeyStore))
 		{
-			this->SSL_Options.keyStore = (const char*)StringCast<UTF8CHAR>(*In_Options.Path_KeyStore).Get();
+			this->SSL_Options.keyStore = APaho_Manager_Sync::FStringToStdString(In_Options.Path_KeyStore).c_str();
 		}
 
 		if (!In_Options.Path_TrustStore.IsEmpty() && FPaths::FileExists(In_Options.Path_TrustStore))
 		{
-			this->SSL_Options.trustStore = (const char*)StringCast<UTF8CHAR>(*In_Options.Path_TrustStore).Get();
+			this->SSL_Options.trustStore = APaho_Manager_Sync::FStringToStdString(In_Options.Path_TrustStore).c_str();
 		}
 
 		if (!In_Options.Path_PrivateKey.IsEmpty() && FPaths::FileExists(In_Options.Path_PrivateKey))
 		{
-			this->SSL_Options.privateKey = (const char*)StringCast<UTF8CHAR>(*In_Options.Path_PrivateKey).Get();
+			this->SSL_Options.privateKey = APaho_Manager_Sync::FStringToStdString(In_Options.Path_PrivateKey).c_str();
 		}
 
 		if (!In_Options.PrivateKeyPass.IsEmpty())
 		{
-			this->SSL_Options.privateKeyPassword = (const char*)StringCast<UTF8CHAR>(*In_Options.PrivateKeyPass).Get();
+			this->SSL_Options.privateKeyPassword = APaho_Manager_Sync::FStringToStdString(In_Options.PrivateKeyPass).c_str();
 		}
 
 		if (!In_Options.CipherSuites.IsEmpty())
 		{
-			this->SSL_Options.enabledCipherSuites = (const char*)StringCast<UTF8CHAR>(*In_Options.CipherSuites).Get();
+			this->SSL_Options.enabledCipherSuites = APaho_Manager_Sync::FStringToStdString(In_Options.CipherSuites).c_str();
 		}
 
 		return true;
@@ -70,16 +70,8 @@ void APaho_Manager_Sync::MessageDelivered(void* CallbackContext, MQTTClient_deli
 
 int APaho_Manager_Sync::MessageArrived(void* CallbackContext, char* TopicName, int TopicLenght, MQTTClient_message* Message)
 {
-	auto StringConverter = [](const char* In_Chars) -> FString
-		{
-			auto Converter = StringCast<UTF8CHAR>(In_Chars);
-			FString RetVal;
-			RetVal.AppendChars(Converter.Get(), Converter.Length());
-			return RetVal;
-		};
-
-	const FString TopicNameStr = StringConverter(TopicName);
-	const FString PayloadStr = StringConverter((const char*)Message->payload);
+	const FString TopicNameStr = APaho_Manager_Sync::Utf8ToFString(TopicName);
+	const FString PayloadStr = APaho_Manager_Sync::Utf8ToFString((const char*)Message->payload);
 
 	FJsonObjectWrapper MessageJson;
 	const bool bIsJsonOk = MessageJson.JsonObjectFromString(PayloadStr);

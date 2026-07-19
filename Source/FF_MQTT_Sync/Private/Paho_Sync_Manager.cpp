@@ -9,6 +9,21 @@ APaho_Manager_Sync::APaho_Manager_Sync()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+std::string APaho_Manager_Sync::FStringToStdString(FString In_String)
+{
+	auto Converter = StringCast<UTF8CHAR>(*In_String);
+	return std::string((const char*)Converter.Get(), Converter.Length());
+}
+
+FString APaho_Manager_Sync::Utf8ToFString(const char* In_String)
+{
+	auto Converter = StringCast<UTF8CHAR>(In_String);
+
+	FString Result;
+	Result.AppendChars(Converter.Get(), Converter.Length());
+	return Result;
+}
+
 // Called when the game starts or when spawned.
 void APaho_Manager_Sync::BeginPlay()
 {

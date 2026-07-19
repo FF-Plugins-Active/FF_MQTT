@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
-// Custom Includes.
+
 #include "Generic_Includes.h"
 #include "Paho_Sync_Includes.h"
 
@@ -52,6 +52,9 @@ public:
 
 	// Sets default values for this actor's properties.
 	APaho_Manager_Sync();
+
+	static std::string FStringToStdString(FString In_String);
+	static FString Utf8ToFString(const char* In_String);
 
 	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
