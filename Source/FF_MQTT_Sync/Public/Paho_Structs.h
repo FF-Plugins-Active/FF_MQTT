@@ -1,7 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Paho_Tools.generated.h"
+
+#include "Paho_Enums.h"
+#include "Generic_Includes.h"
+
+#include "Paho_Structs.generated.h"
 
 USTRUCT(BlueprintType)
 struct FF_MQTT_SYNC_API FPahoSslOptions
@@ -154,9 +158,42 @@ FORCEINLINE uint32 GetTypeHash(const FPahoClientParams& Key)
 	return GenericHash;
 }
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegate_Paho_Int, int32, Out_Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegate_Paho_String, FString, Out_Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegate_Paho_Json, FJsonObjectWrapper, Out_Result);
+USTRUCT(BlueprintType)
+struct FF_MQTT_SYNC_API FPahoMessage
+{
+	GENERATED_BODY()
 
-UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegate_Paho_Connection, bool, bIsSuccessfull, FJsonObjectWrapper, Out_Code);
+	UPROPERTY(BlueprintReadOnly)
+	TArray<uint8> Payload;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString TopicName;
+
+	UPROPERTY(BlueprintReadOnly)
+	int64 TopicLength;
+
+	bool operator == (const FPahoMessage& Other) const
+	{
+		return Payload == Other.Payload && TopicLength == Other.TopicLength && TopicName == Other.TopicName;
+	}
+
+	bool operator != (const FPahoMessage& Other) const
+	{
+		return !(*this == Other);
+	}
+};
+
+FORCEINLINE uint32 GetTypeHash(const FPahoMessage& Key)
+{
+	uint32 Hash_Payload = GetTypeHash(Key.Payload);
+	uint32 Hash_TopicLength = GetTypeHash(Key.TopicLength);
+	uint32 Hash_TopicName = GetTypeHash(Key.TopicName);
+
+	uint32 GenericHash;
+	FMemory::Memset(&GenericHash, 0, sizeof(uint32));
+	GenericHash = HashCombine(GenericHash, Hash_Payload);
+	GenericHash = HashCombine(GenericHash, Hash_TopicLength);
+	GenericHash = HashCombine(GenericHash, Hash_TopicName);
+
+	return GenericHash;
+}

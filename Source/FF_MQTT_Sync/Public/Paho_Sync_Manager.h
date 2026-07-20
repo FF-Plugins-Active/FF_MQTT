@@ -5,9 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
-
-#include "Generic_Includes.h"
 #include "Paho_Sync_Includes.h"
+#include "Paho_Delegates.h"
 
 #include "Paho_Sync_Manager.generated.h"
 
